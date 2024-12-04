@@ -105,7 +105,7 @@
         <input
           type="text"
           id="manual-input-text"
-          placeholder="troll sentence"
+          placeholder="Enter sentence to translate"
         />
       </div>
     </div>
@@ -113,39 +113,59 @@
     <script src="languages.js"></script>
     <script src="script.js"></script>
     <script>
-      // Fake Speech-to-Text functionality
-      let isListening = false; // Flag to track if mic is "listening"
+      // Speech-to-Text functionality
+      let isListening = false; // Flag to track if mic is listening
       document.getElementById("mic-btn").addEventListener("click", () => {
-        const inputText = document.getElementById("input-text");
-        const manualInputText = document.getElementById("manual-input-text").value.trim() ||
-          "Translating the sentence, I'm so sigma"; // Use manual input or default sentence
+        
 
-        // Simulating the action of "listening"
-        if (isListening) {
-          // Simulate the process of "inputting" the manual text into the input field
-          inputText.value = manualInputText; 
-          const utterance = new SpeechSynthesisUtterance(manualInputText); // Simulate speaking it out loud
-          window.speechSynthesis.speak(utterance); 
-          isListening = false; // Reset to not listening
-        } else {
-          // Change button text to show "listening"
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang =
+          document.querySelector("#input-language .selected").dataset.value ||
+          "en";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => {
           document.getElementById("mic-btn").innerHTML =
             "<ion-icon name='mic'></ion-icon> Listening...";
+        };
 
-          // Simulate that it's capturing the text from the input
-          setTimeout(() => {
-            inputText.value = manualInputText; // Fill in input text after "listening"
-            document.getElementById("mic-btn").innerHTML =
-              "<ion-icon name='mic-outline'></ion-icon> Speak";
-            isListening = true; // Reset to "listening" state after time delay
-          }, 1500); // Simulate time it takes to "listen"
+        recognition.onerror = (event) => {
+          alert("Speech recognition error: " + event.error);
+          document.getElementById("mic-btn").innerHTML =
+            "<ion-icon name='mic-outline'></ion-icon> Speak";
+        };
+
+        recognition.onend = () => {
+          document.getElementById("mic-btn").innerHTML =
+            "<ion-icon name='mic-outline'></ion-icon> Speak";
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          document.getElementById("input-text").value = transcript;
+        };
+
+        if (isListening) {
+          const inputText = document.getElementById("input-text");
+          let sentenceToTranslate =
+            document.getElementById("manual-input-text").value.trim() ||
+            "Translating the sentence, I'm so sigma"; // Use manual input or default sentence
+          inputText.value = sentenceToTranslate; // Place the sentence in input text area
+
+          const utterance = new SpeechSynthesisUtterance(sentenceToTranslate);
+          window.speechSynthesis.speak(utterance); // Speak the sentence
+          isListening = false; // Stop listening after the second click
+        } else {
+          recognition.start(); // Start listening for speech
+          isListening = true; // Set flag to listening
         }
       });
 
       // Text-to-Speech functionality
       document.getElementById("speak-btn").addEventListener("click", () => {
         const text = document.getElementById("output-text").value;
-
+        
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang =
           document.querySelector("#output-language .selected").dataset.value ||
