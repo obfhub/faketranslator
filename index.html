@@ -52,26 +52,10 @@
           <div class="chars"><span id="input-chars">0</span> / 5000</div>
         </div>
         <div class="card-bottom">
-          <p>Or choose your document!</p>
-          <label for="upload-document">
-            <span id="upload-title">Choose File</span>
-            <ion-icon name="cloud-upload-outline"></ion-icon>
-            <input type="file" id="upload-document" hidden />
-          </label>
-          <div class="voice-input">
-            <label for="voice-input-field">
-              <ion-icon name="mic-outline"></ion-icon>
-              <span>Speak</span>
-            </label>
-            <input
-              id="voice-input-field"
-              type="text"
-              x-webkit-speech
-              speech
-              placeholder="Tap to speak"
-              onwebkitspeechchange="handleVoiceInput(this.value)"
-            />
-          </div>
+          <button id="mic-btn">
+            <ion-icon name="mic-outline"></ion-icon>
+            <span>Speak</span>
+          </button>
         </div>
       </div>
 
@@ -120,10 +104,40 @@
     <script src="languages.js"></script>
     <script src="script.js"></script>
     <script>
-      function handleVoiceInput(value) {
-        const inputTextArea = document.getElementById("input-text");
-        inputTextArea.value = value; // Add spoken text to the input area
-      }
+      // Speech-to-Text
+      document.getElementById("mic-btn").addEventListener("click", () => {
+        if (!("webkitSpeechRecognition" in window)) {
+          alert("Speech recognition is not supported in this browser.");
+          return;
+        }
+
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang =
+          document.querySelector("#input-language .selected").dataset.value ||
+          "en";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => {
+          document.getElementById("mic-btn").innerHTML = "<ion-icon name='mic'></ion-icon> Listening...";
+        };
+
+        recognition.onerror = (event) => {
+          alert("Speech recognition error: " + event.error);
+          document.getElementById("mic-btn").innerHTML = "<ion-icon name='mic-outline'></ion-icon> Speak";
+        };
+
+        recognition.onend = () => {
+          document.getElementById("mic-btn").innerHTML = "<ion-icon name='mic-outline'></ion-icon> Speak";
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          document.getElementById("input-text").value = transcript;
+        };
+
+        recognition.start();
+      });
 
       // Text-to-Speech
       document.getElementById("speak-btn").addEventListener("click", () => {
