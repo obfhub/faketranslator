@@ -13,7 +13,7 @@
       src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
     ></script>
     <link rel="stylesheet" href="style.css" />
-    <title>Language Translater</title>
+    <title>Language Translator</title>
   </head>
   <body>
     <div class="mode">
@@ -21,15 +21,15 @@
         <div class="toggle-track">
           <input type="checkbox" class="toggle-checkbox" id="dark-mode-btn" />
           <span class="toggle-thumb"></span>
-          <img src="images/sun.png" alt="" />
-          <img src="images/moon.png" alt="" />
+          <img src="images/sun.png" alt="Sun Icon" />
+          <img src="images/moon.png" alt="Moon Icon" />
         </div>
       </label>
     </div>
     <div class="container">
       <div class="card input-wrapper">
         <div class="from">
-          <span class="heading">From :</span>
+          <span class="heading">From:</span>
           <div class="dropdown-container" id="input-language">
             <div class="dropdown-toggle">
               <ion-icon name="globe-outline"></ion-icon>
@@ -37,8 +37,8 @@
               <ion-icon name="chevron-down-outline"></ion-icon>
             </div>
             <ul class="dropdown-menu">
-              <li class="option active">DropDown Menu Item 1</li>
-              <li class="option">DropDown Menu Item 2</li>
+              <li class="option active">English</li>
+              <li class="option">French</li>
             </ul>
           </div>
         </div>
@@ -58,10 +58,20 @@
             <ion-icon name="cloud-upload-outline"></ion-icon>
             <input type="file" id="upload-document" hidden />
           </label>
-          <button id="mic-btn">
-            <ion-icon name="mic-outline"></ion-icon>
-            <span>Speak</span>
-          </button>
+          <div class="voice-input">
+            <label for="voice-input-field">
+              <ion-icon name="mic-outline"></ion-icon>
+              <span>Speak</span>
+            </label>
+            <input
+              id="voice-input-field"
+              type="text"
+              x-webkit-speech
+              speech
+              placeholder="Tap to speak"
+              onwebkitspeechchange="handleVoiceInput(this.value)"
+            />
+          </div>
         </div>
       </div>
 
@@ -73,16 +83,16 @@
 
       <div class="card output-wrapper">
         <div class="to">
-          <span class="heading">To :</span>
+          <span class="heading">To:</span>
           <div class="dropdown-container" id="output-language">
             <div class="dropdown-toggle">
               <ion-icon name="globe-outline"></ion-icon>
-              <span class="selected" data-value="en">Englsih</span>
+              <span class="selected" data-value="en">English</span>
               <ion-icon name="chevron-down-outline"></ion-icon>
             </div>
             <ul class="dropdown-menu">
-              <li class="option active">DropDown Menu Item 1</li>
-              <li class="option">DropDown Menu Item 2</li>
+              <li class="option active">English</li>
+              <li class="option">French</li>
             </ul>
           </div>
         </div>
@@ -110,6 +120,11 @@
     <script src="languages.js"></script>
     <script src="script.js"></script>
     <script>
+      function handleVoiceInput(value) {
+        const inputTextArea = document.getElementById("input-text");
+        inputTextArea.value = value; // Add spoken text to the input area
+      }
+
       // Text-to-Speech
       document.getElementById("speak-btn").addEventListener("click", () => {
         const text = document.getElementById("output-text").value;
@@ -122,41 +137,6 @@
           document.querySelector("#output-language .selected").dataset.value ||
           "en";
         window.speechSynthesis.speak(utterance);
-      });
-
-      // Speech-to-Text
-      document.getElementById("mic-btn").addEventListener("click", () => {
-        if (!("webkitSpeechRecognition" in window)) {
-          alert("Speech recognition is not supported in this browser.");
-          return;
-        }
-
-        const recognition = new webkitSpeechRecognition();
-        recognition.lang =
-          document.querySelector("#input-language .selected").dataset.value ||
-          "en";
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-
-        recognition.onstart = () => {
-          document.getElementById("mic-btn").innerHTML = "Listening...";
-        };
-
-        recognition.onerror = (event) => {
-          alert("Speech recognition error: " + event.error);
-          document.getElementById("mic-btn").innerHTML = "Speak";
-        };
-
-        recognition.onend = () => {
-          document.getElementById("mic-btn").innerHTML = "Speak";
-        };
-
-        recognition.onresult = (event) => {
-          const transcript = event.results[0][0].transcript;
-          document.getElementById("input-text").value = transcript;
-        };
-
-        recognition.start();
       });
     </script>
   </body>
