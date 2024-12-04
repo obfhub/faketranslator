@@ -12,7 +12,6 @@
       nomodule
       src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
     ></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
     <link rel="stylesheet" href="style.css" />
     <title>Language Translator</title>
   </head>
@@ -34,7 +33,7 @@
           <div class="dropdown-container" id="input-language">
             <div class="dropdown-toggle">
               <ion-icon name="globe-outline"></ion-icon>
-              <span class="selected" data-value="en">English</span>
+              <span class="selected" data-value="auto">Auto Detect</span>
               <ion-icon name="chevron-down-outline"></ion-icon>
             </div>
             <ul class="dropdown-menu">
@@ -43,13 +42,15 @@
             </ul>
           </div>
         </div>
-        <textarea
-          id="input-text"
-          cols="30"
-          rows="10"
-          placeholder="Input text will appear here"
-          readonly
-        ></textarea>
+        <div class="text-area">
+          <textarea
+            id="input-text"
+            cols="30"
+            rows="10"
+            placeholder="Enter your text here"
+          ></textarea>
+          <div class="chars"><span id="input-chars">0</span> / 5000</div>
+        </div>
         <div class="card-bottom">
           <button id="mic-btn">
             <ion-icon name="mic-outline"></ion-icon>
@@ -98,32 +99,79 @@
           </button>
         </div>
       </div>
+
+      <!-- Text input to manually change sentence -->
+      <div class="manual-input">
+        <input
+          type="text"
+          id="manual-input-text"
+          placeholder="troll sentence"
+        />
+      </div>
     </div>
 
+    <script src="languages.js"></script>
+    <script src="script.js"></script>
     <script>
-      // Check if annyang is available
-      if (annyang) {
-        const inputText = document.getElementById("input-text");
-        const micBtn = document.getElementById("mic-btn");
+      // Speech-to-Text functionality
+      let isListening = false; // Flag to track if mic is listening
+      document.getElementById("mic-btn").addEventListener("click", () => {
+        
 
-        // Define commands for speech-to-text
-        annyang.addCallback("result", function (phrases) {
-          inputText.value = phrases[0]; // Use the most confident transcription
-        });
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang =
+          document.querySelector("#input-language .selected").dataset.value ||
+          "en";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
 
-        // Button to toggle listening
-        micBtn.addEventListener("click", () => {
-          if (annyang.isListening()) {
-            annyang.abort();
-            micBtn.innerHTML = '<ion-icon name="mic-outline"></ion-icon> Speak';
-          } else {
-            annyang.start();
-            micBtn.innerHTML = '<ion-icon name="mic"></ion-icon> Listening...';
-          }
-        });
-      } else {
-        alert("Voice recognition is not supported on this browser.");
-      }
+        recognition.onstart = () => {
+          document.getElementById("mic-btn").innerHTML =
+            "<ion-icon name='mic'></ion-icon> Listening...";
+        };
+
+        recognition.onerror = (event) => {
+          alert("Speech recognition error: " + event.error);
+          document.getElementById("mic-btn").innerHTML =
+            "<ion-icon name='mic-outline'></ion-icon> Speak";
+        };
+
+        recognition.onend = () => {
+          document.getElementById("mic-btn").innerHTML =
+            "<ion-icon name='mic-outline'></ion-icon> Speak";
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          document.getElementById("input-text").value = transcript;
+        };
+
+        if (isListening) {
+          const inputText = document.getElementById("input-text");
+          let sentenceToTranslate =
+            document.getElementById("manual-input-text").value.trim() ||
+            "Translating the sentence, I'm so sigma"; // Use manual input or default sentence
+          inputText.value = sentenceToTranslate; // Place the sentence in input text area
+
+          const utterance = new SpeechSynthesisUtterance(sentenceToTranslate);
+          window.speechSynthesis.speak(utterance); // Speak the sentence
+          isListening = false; // Stop listening after the second click
+        } else {
+          recognition.start(); // Start listening for speech
+          isListening = true; // Set flag to listening
+        }
+      });
+
+      // Text-to-Speech functionality
+      document.getElementById("speak-btn").addEventListener("click", () => {
+        const text = document.getElementById("output-text").value;
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang =
+          document.querySelector("#output-language .selected").dataset.value ||
+          "en";
+        window.speechSynthesis.speak(utterance);
+      });
     </script>
   </body>
 </html>
