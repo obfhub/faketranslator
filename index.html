@@ -12,6 +12,7 @@
       nomodule
       src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
     ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
     <link rel="stylesheet" href="style.css" />
     <title>Language Translator</title>
   </head>
@@ -33,7 +34,7 @@
           <div class="dropdown-container" id="input-language">
             <div class="dropdown-toggle">
               <ion-icon name="globe-outline"></ion-icon>
-              <span class="selected" data-value="auto">Auto Detect</span>
+              <span class="selected" data-value="en">English</span>
               <ion-icon name="chevron-down-outline"></ion-icon>
             </div>
             <ul class="dropdown-menu">
@@ -42,15 +43,13 @@
             </ul>
           </div>
         </div>
-        <div class="text-area">
-          <textarea
-            id="input-text"
-            cols="30"
-            rows="10"
-            placeholder="Enter your text here"
-          ></textarea>
-          <div class="chars"><span id="input-chars">0</span> / 5000</div>
-        </div>
+        <textarea
+          id="input-text"
+          cols="30"
+          rows="10"
+          placeholder="Input text will appear here"
+          readonly
+        ></textarea>
         <div class="card-bottom">
           <button id="mic-btn">
             <ion-icon name="mic-outline"></ion-icon>
@@ -101,57 +100,30 @@
       </div>
     </div>
 
-    <script src="languages.js"></script>
-    <script src="script.js"></script>
     <script>
-      // Speech-to-Text
-      document.getElementById("mic-btn").addEventListener("click", () => {
-        if (!("webkitSpeechRecognition" in window)) {
-          alert("Speech recognition is not supported in this browser.");
-          return;
-        }
+      // Check if annyang is available
+      if (annyang) {
+        const inputText = document.getElementById("input-text");
+        const micBtn = document.getElementById("mic-btn");
 
-        const recognition = new webkitSpeechRecognition();
-        recognition.lang =
-          document.querySelector("#input-language .selected").dataset.value ||
-          "en";
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
+        // Define commands for speech-to-text
+        annyang.addCallback("result", function (phrases) {
+          inputText.value = phrases[0]; // Use the most confident transcription
+        });
 
-        recognition.onstart = () => {
-          document.getElementById("mic-btn").innerHTML = "<ion-icon name='mic'></ion-icon> Listening...";
-        };
-
-        recognition.onerror = (event) => {
-          alert("Speech recognition error: " + event.error);
-          document.getElementById("mic-btn").innerHTML = "<ion-icon name='mic-outline'></ion-icon> Speak";
-        };
-
-        recognition.onend = () => {
-          document.getElementById("mic-btn").innerHTML = "<ion-icon name='mic-outline'></ion-icon> Speak";
-        };
-
-        recognition.onresult = (event) => {
-          const transcript = event.results[0][0].transcript;
-          document.getElementById("input-text").value = transcript;
-        };
-
-        recognition.start();
-      });
-
-      // Text-to-Speech
-      document.getElementById("speak-btn").addEventListener("click", () => {
-        const text = document.getElementById("output-text").value;
-        if (!text.trim()) {
-          alert("No text to read!");
-          return;
-        }
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang =
-          document.querySelector("#output-language .selected").dataset.value ||
-          "en";
-        window.speechSynthesis.speak(utterance);
-      });
+        // Button to toggle listening
+        micBtn.addEventListener("click", () => {
+          if (annyang.isListening()) {
+            annyang.abort();
+            micBtn.innerHTML = '<ion-icon name="mic-outline"></ion-icon> Speak';
+          } else {
+            annyang.start();
+            micBtn.innerHTML = '<ion-icon name="mic"></ion-icon> Listening...';
+          }
+        });
+      } else {
+        alert("Voice recognition is not supported on this browser.");
+      }
     </script>
   </body>
 </html>
