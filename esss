@@ -1139,15 +1139,15 @@ Library.Sections.__index = Library.Sections;
 				Size = Options.Size or Options.size or UDim2.new(0, 550,0, 600);
 			};
 			--
-			local ScreenGui = gethui()
-			local Outline = gethui()
-			local Inline = gethui()
-			local Accent = gethui()
-			local HolderOutline = gethui()
-			local HolderInline = Igethui()
-			local Tabs = gethui()
-			local UIListLayout = gethui()
-			local DragButton = gethui()
+			local ScreenGui = Instance.new('ScreenGui', gethui())
+			local Outline = Instance.new('Frame', ScreenGui)
+			local Inline = Instance.new('Frame', Outline)
+			local Accent = Instance.new('Frame', Inline)
+			local HolderOutline = Instance.new('Frame', Inline)
+			local HolderInline = Instance.new('Frame', HolderOutline)
+			local Tabs = Instance.new('Frame', HolderInline)
+			local UIListLayout = Instance.new('UIListLayout', Tabs)
+			local DragButton = Instance.new('TextButton', Outline)
 			local KeybindList = Library:KeybindList()
 			--
 			ScreenGui.DisplayOrder = 2
