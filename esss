@@ -257,7 +257,7 @@ local Mouse = LocalPlayer:GetMouse();
 local Camera = Workspace.Camera;
 local viewportSize = game.Workspace.Camera.ViewportSize;
 local Offset = game:GetService("GuiService"):GetGuiInset().Y;
-local NotifiactionSGui = gethui();
+local NotifiactionSGui = Instance.new("ScreenGui", gethui()); NotifiactionSGui.Enabled = true
 local NewVector2 = Vector2.new;
 local NewVector3 = Vector3.new;
 local NewCFrame = CFrame.new; 
@@ -293,7 +293,7 @@ local crosshair_LineAmount = 4;
 local crosshair_SpinAngle = 0; 
 local crosshair_tick = 0;
 local buying = false; 
-local PlaceHolderUI = gethui();
+local PlaceHolderUI = Instance.new("ScreenGui", gethui());
 PlaceHolderUI.Enabled = false
 local Languages = {
     A = {English = "A", Arabic = "أ", Albanian = "A", Japanese = "あ", Spanish = "A", Russian = "А", Chinese = "阿", Urdu = "ا", French = "A", Portuguese = "A", Hindi = "अ"},
@@ -1139,17 +1139,18 @@ Library.Sections.__index = Library.Sections;
 				Size = Options.Size or Options.size or UDim2.new(0, 550,0, 600);
 			};
 			--
-			local ScreenGui = gethui()
-			local Outline = gethui()
-			local Inline = Instance.new('Frame', Outline)
-			local Accent = Instance.new('Frame', Inline)
-			local HolderOutline = Instance.new('Frame', Inline)
-			local HolderInline = Instance.new('Frame', HolderOutline)
-			local Tabs = Instance.new('Frame', HolderInline)
-			local UIListLayout = Instance.new('UIListLayout', Tabs)
-			local DragButton = Instance.new('TextButton', Outline)
-			local KeybindList = Library:KeybindList()
-			--
+				local ScreenGui = Instance.new('ScreenGui', gethui())
+
+				local Outline = Instance.new('Frame', ScreenGui)
+				local Inline = Instance.new('Frame', Outline)
+				local Accent = Instance.new('Frame', Inline)
+				local HolderOutline = Instance.new('Frame', Inline)
+				local HolderInline = Instance.new('Frame', HolderOutline)
+				local Tabs = Instance.new('Frame', HolderInline)
+				local UIListLayout = Instance.new('UIListLayout', Tabs)
+				local DragButton = Instance.new('TextButton', Outline)
+				local KeybindList = Library:KeybindList()
+				--
 			ScreenGui.DisplayOrder = 2
 			--
 			Outline.Name = "Outline"
@@ -1447,7 +1448,7 @@ Library.Sections.__index = Library.Sections;
             local New = Instance.new("ImageButton")
 			--
 			New.Name = "New"
-            New.Parent = gethui()
+            New.Parent = Weapon.Window.Elements.WeaponInline
             New.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             New.BackgroundTransparency = 1.000
             New.BorderColor3 = Color3.fromRGB(0, 0, 0)
