@@ -257,7 +257,7 @@ local Mouse = LocalPlayer:GetMouse();
 local Camera = Workspace.Camera;
 local viewportSize = game.Workspace.Camera.ViewportSize;
 local Offset = game:GetService("GuiService"):GetGuiInset().Y;
-local NotifiactionSGui = gethui(); NotifiactionSGui.Enabled = true
+local NotifiactionSGui = Instance.new("ScreenGui", game.CoreGui); NotifiactionSGui.Enabled = true
 local NewVector2 = Vector2.new;
 local NewVector3 = Vector3.new;
 local NewCFrame = CFrame.new; 
@@ -1447,7 +1447,7 @@ Library.Sections.__index = Library.Sections;
             local New = Instance.new("ImageButton")
 			--
 			New.Name = "New"
-            New.Parent = gethui()
+            New.Parent = Weapon.Window.Elements.WeaponInline
             New.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             New.BackgroundTransparency = 1.000
             New.BorderColor3 = Color3.fromRGB(0, 0, 0)
