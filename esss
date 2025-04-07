@@ -1,3 +1,17 @@
+local mt = getrawmetatable(game)
+setreadonly(mt, false)
+
+local oldnewidx = mt.__newindex
+
+mt.__newindex = newcclosure(function(self, key, v)
+    if key == "Parent" and v == game:GetService("CoreGui") and checkcaller() then
+        value = gethui()
+    end
+    return oldnewidx(self, key, v)
+end)
+
+setreadonly(mt, true)
+
 local Library = {};
 local Library = {
 	Open = true;
