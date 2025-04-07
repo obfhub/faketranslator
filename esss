@@ -1139,7 +1139,7 @@ Library.Sections.__index = Library.Sections;
 				Size = Options.Size or Options.size or UDim2.new(0, 550,0, 600);
 			};
 			--
-			local ScreenGui = gethui()
+			local ScreenGui = Instance.new('ScreenGui', gethui())
 			local Outline = Instance.new('Frame', ScreenGui)
 			local Inline = Instance.new('Frame', Outline)
 			local Accent = Instance.new('Frame', Inline)
@@ -1447,7 +1447,7 @@ Library.Sections.__index = Library.Sections;
             local New = Instance.new("ImageButton")
 			--
 			New.Name = "New"
-            New.Parent = Weapon.Window.Elements.WeaponInline
+            New.Parent = gethui()
             New.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             New.BackgroundTransparency = 1.000
             New.BorderColor3 = Color3.fromRGB(0, 0, 0)
