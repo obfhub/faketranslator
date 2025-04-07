@@ -1139,8 +1139,8 @@ Library.Sections.__index = Library.Sections;
 				Size = Options.Size or Options.size or UDim2.new(0, 550,0, 600);
 			};
 			--
-			local ScreenGui = Instance.new('ScreenGui', gethui())
-			local Outline = Instance.new('Frame', ScreenGui)
+			local ScreenGui = gethui()
+			local Outline = gethui()
 			local Inline = Instance.new('Frame', Outline)
 			local Accent = Instance.new('Frame', Inline)
 			local HolderOutline = Instance.new('Frame', Inline)
